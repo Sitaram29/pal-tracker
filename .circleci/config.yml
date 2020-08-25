@@ -72,8 +72,7 @@ jobs:
             cf auth "$CF_USERNAME" "$CF_PASSWORD"
             cf target -o "$CF_ORG" -s "$CF_SPACE_REVIEW"
             cf push -f manifest-$ENVIRONMENT.yml
-            bash ./migrate-databases.sh pal-tracker-reviewcd ..
-             . tracker-database
+            bash ./migrate-databases.sh pal-tracker-review . tracker-database
 
   deployToProd:
     docker:
@@ -85,6 +84,7 @@ jobs:
     steps:
       - attach_workspace:
           at: artifacts
+
       - run:
           name: Install CF CLI
           command: |
@@ -95,10 +95,10 @@ jobs:
             apt-get update
             apt-get install cf-cli
 
-       - run:
-          name: Install jq
-          command: |
-            apt-get -y install jq
+      - run:
+         name: Install jq
+         command: |
+          apt-get -y install jq
 
       - run:
           name: Install netcat
