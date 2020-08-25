@@ -63,16 +63,17 @@ namespace PalTrackerTests
 
             var response = await _testClient.GetAsync("/time-entries").ConfigureAwait(false);
             var responseBody = JArray.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            //var resCount = responseBody.Count;
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            Assert.Equal(id1, responseBody[0]["id"].ToObject<int>());
+            Assert.Equal(1, responseBody[0]["id"].ToObject<int>());
             Assert.Equal(222, responseBody[0]["projectId"].ToObject<long>());
             Assert.Equal(333, responseBody[0]["userId"].ToObject<long>());
             Assert.Equal("01/08/2008 00:00:00", responseBody[0]["date"].ToObject<string>());
             Assert.Equal(24, responseBody[0]["hours"].ToObject<int>());
 
-            Assert.Equal(id2, responseBody[1]["id"].ToObject<int>());
+            Assert.Equal(2, responseBody[1]["id"].ToObject<int>());
             Assert.Equal(444, responseBody[1]["projectId"].ToObject<long>());
             Assert.Equal(555, responseBody[1]["userId"].ToObject<long>());
             Assert.Equal("02/10/2008 00:00:00", responseBody[1]["date"].ToObject<string>());
