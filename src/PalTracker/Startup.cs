@@ -38,6 +38,7 @@ namespace PalTracker
             }
             services.AddSingleton(sp => new WelcomeMessage(message));
             services.AddSingleton(cf => new CloudFoundryInfo(port,memory_limit,cf_instance_index,cf_instance_addr));
+            services.AddSingleton<ITimeEntryRepository, InMemoryTimeEntryRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
