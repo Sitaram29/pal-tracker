@@ -5,4 +5,4 @@ applications:
   routes:
     - route: pal-tracker-prod-anilv.cfapps.io
   env:
-    WELCOME_MESSAGE: Hello from the production environment
+    WELCOME_MESSAGE: Hello from the prod environment
