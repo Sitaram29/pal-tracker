@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using PalTracker;
 using Xunit;
+using static Moq.Times;
 
 namespace PalTrackerTests
 {
@@ -12,11 +13,17 @@ namespace PalTrackerTests
         private readonly TimeEntryController _controller;
         private readonly Mock<ITimeEntryRepository> _repository;
 
+        private readonly Mock<IOperationCounter<TimeEntry>> _operationCounter;
+
         public TimeEntryControllerTest()
         {
+            _operationCounter = new Mock<IOperationCounter<TimeEntry>>();
+            _operationCounter.Setup(oc => oc.Increment(It.IsAny<TrackedOperation>()));
+
             _repository = new Mock<ITimeEntryRepository>();
-            _controller = new TimeEntryController(_repository.Object);
-        }
+            _controller = new TimeEntryController(_repository.Object,_operationCounter.Object);
+            
+        } 
 
         [Fact]
         public void Read()
@@ -33,6 +40,7 @@ namespace PalTrackerTests
 
             Assert.Equal(expected, typedResponse.Value);
             Assert.Equal(200, typedResponse.StatusCode);
+             _operationCounter.Verify(oc => oc.Increment(TrackedOperation.Read), Once);
         }
 
         [Fact]
@@ -47,6 +55,7 @@ namespace PalTrackerTests
             var typedResponse = response as NotFoundResult;
 
             Assert.Equal(404, typedResponse.StatusCode);
+            _operationCounter.Verify(oc => oc.Increment(TrackedOperation.Read), Once);
         }
 
         [Fact]
@@ -65,6 +74,7 @@ namespace PalTrackerTests
             Assert.Equal(201, typedResponse.StatusCode);
             Assert.Equal("GetTimeEntry", typedResponse.RouteName);
             Assert.Equal(expected, typedResponse.Value);
+             _operationCounter.Verify(oc => oc.Increment(TrackedOperation.Create), Once);
         }
 
         [Fact]
@@ -86,6 +96,7 @@ namespace PalTrackerTests
 
             Assert.Equal(timeEntries, typedResponse.Value);
             Assert.Equal(200, typedResponse.StatusCode);
+             _operationCounter.Verify(oc => oc.Increment(TrackedOperation.List), Once);
         }
 
         [Fact]
@@ -105,6 +116,7 @@ namespace PalTrackerTests
 
             Assert.Equal(updated, typedResponse.Value);
             Assert.Equal(200, typedResponse.StatusCode);
+             _operationCounter.Verify(oc => oc.Increment(TrackedOperation.Update), Once);
         }
 
         [Fact]
@@ -121,6 +133,7 @@ namespace PalTrackerTests
             var typedResponse = response as NotFoundResult;
 
             Assert.Equal(404, typedResponse.StatusCode);
+             _operationCounter.Verify(oc => oc.Increment(TrackedOperation.Update), Once);
         }
 
         [Fact]
@@ -136,6 +149,7 @@ namespace PalTrackerTests
             var typedResponse = response as NoContentResult;
 
             Assert.Equal(204, typedResponse.StatusCode);
+             _operationCounter.Verify(oc => oc.Increment(TrackedOperation.Delete), Once);
         }
 
         [Fact]
@@ -150,6 +164,7 @@ namespace PalTrackerTests
             var typedResponse = response as NotFoundResult;
 
             Assert.Equal(404, typedResponse.StatusCode);
+             _operationCounter.Verify(oc => oc.Increment(TrackedOperation.Delete), Once);
         }
     }
 }
